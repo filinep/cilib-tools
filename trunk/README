@@ -1,6 +1,64 @@
+================================================================================
+Disclaimer:
+================================================================================
+This program was created to assist me with my research.
+It was hacked together over a period of time so it is a bit
+rough around the edges.
+Support for it will be provided on an "if-I-have-time" basis.
+That being said it is open source so patches are welcome :)
+
+================================================================================
+License Stuff:
+================================================================================
 These tools are released under the terms of the Lesser GNU General Public
 License (LGPL). A copy of the GPL has been included in the file COPYING.LESSER. Please
 make sure that you agree to the terms of the license before making use of any
 code provided.
 
-Documentation will follow.
+================================================================================
+Dependencies:
+================================================================================
+    Gtk (Tested with version 3.0 should (in theory :) work with 2.22 or maybe
+         even earlier versions)
+    Vte (Tested with 0.27)
+    Python (Developed with v2.7.1)
+
+================================================================================
+Usage (i.e. limitations):
+================================================================================
+When first run there should be tabs along the top for algorithms, problems,
+measurements and simulations. Clicking the add button adds a new section to the
+selected tab. The simulator tab also has a run button which will run the
+selected simulations. Progress is shown in the lower terminal window. When a new
+section is added the combo boxes will show the classes allowed for that tag.
+When an option is chosen from the list the methods pertaining to that choice are
+added below it. Lots of assumptions were made with regards to what will be shown
+but for the most part it should work. See the java file in the cilib folder for
+these assumptions.
+
+Initially the combo box shows "Default". This means that whatever CILib uses as
+a default value will be used. It is assumed the user knows which tags have
+default values. If the combo box shows "Primitive" it means that a value is
+required, either a string or a number and not a class. This has to be entered
+manually.
+
+When opening existing xml files it is assumed that each simulation only uses
+idrefs so no declaring of algorithms, etc., in the simulation tag. Also, for
+now, idrefs cannot be used anywhere else e.g. in multi population algorithms.
+No undo functionality is implemented so any changes that need to be undone will
+have to be redone.
+
+Copying and pasting can only be done within each tab. To copy select the root of
+the section you want to copy, right click and select "copy". To paste select the
+root of the section where you want to paste, right click and select "paste". The
+section will be pasted as a child of the root.
+
+My research involves PSOs so no testing has been done with other algortihms.
+
+================================================================================
+Contact:
+================================================================================
+Filipe Nepomuceno: filinep@gmail.com
+Project site: http://code.google.com/p/cilib-tools/
+CILib: http://www.cilib.net
+       http://code.google.com/p/cilib/

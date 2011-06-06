@@ -65,3 +65,5 @@ class CilibReflection:
         except:
             rType = {}
         return rType
+
+cilib = CilibReflection()
