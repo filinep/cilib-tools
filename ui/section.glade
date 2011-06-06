@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <!-- interface-requires gtk+ 3.0 -->
+  <object class="GtkListStore" id="comboModel">
+    <columns>
+      <!-- column-name items -->
+      <column type="gchararray"/>
+    </columns>
+  </object>
+  <object class="GtkDialog" id="getID">
+    <property name="can_focus">False</property>
+    <property name="border_width">5</property>
+    <property name="type_hint">dialog</property>
+    <child internal-child="vbox">
+      <object class="GtkBox" id="dialog-vbox1">
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">2</property>
+        <child internal-child="action_area">
+          <object class="GtkButtonBox" id="dialog-action_area1">
+            <property name="can_focus">False</property>
+            <property name="layout_style">end</property>
+            <child>
+              <object class="GtkButton" id="button1">
+                <property name="label">gtk-cancel</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="use_action_appearance">False</property>
+                <property name="use_stock">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="button2">
+                <property name="label">gtk-ok</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="use_action_appearance">False</property>
+                <property name="use_stock">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="pack_type">end</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox" id="box1">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkLabel" id="label1">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="xalign">0</property>
+                <property name="xpad">5</property>
+                <property name="ypad">5</property>
+                <property name="label" translatable="yes">Enter the ID for the new section:</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkEntry" id="idEntry">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="invisible_char">●</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="errorLabel">
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Invalid name!</property>
+                <attributes>
+                  <attribute name="foreground" value="#ffff00000000"/>
+                </attributes>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+    <action-widgets>
+      <action-widget response="1">button1</action-widget>
+      <action-widget response="0">button2</action-widget>
+    </action-widgets>
+  </object>
+  <object class="GtkBox" id="section">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="orientation">vertical</property>
+    <child>
+      <object class="GtkToolbar" id="sectionToolbar">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <child>
+          <object class="GtkToolButton" id="addSection">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="use_action_appearance">False</property>
+            <property name="label" translatable="yes">Add</property>
+            <property name="use_underline">True</property>
+            <property name="stock_id">gtk-add</property>
+            <signal name="clicked" handler="on_add_click" swapped="no"/>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="homogeneous">True</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkToolButton" id="expandSection">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="use_action_appearance">False</property>
+            <property name="label" translatable="yes">Expand All</property>
+            <property name="use_underline">True</property>
+            <property name="stock_id">gtk-sort-ascending</property>
+            <signal name="clicked" handler="on_expand_click" swapped="no"/>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="homogeneous">True</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkToolButton" id="collapseSection">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="use_action_appearance">False</property>
+            <property name="label" translatable="yes">Collapse All</property>
+            <property name="use_underline">True</property>
+            <property name="stock_id">gtk-sort-descending</property>
+            <signal name="clicked" handler="on_collapse_click" swapped="no"/>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="homogeneous">True</property>
+          </packing>
+        </child>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">0</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkScrolledWindow" id="sectionScroll">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="shadow_type">in</property>
+        <child>
+          <object class="GtkTreeView" id="treeview">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="model">store</property>
+            <property name="level_indentation">5</property>
+            <property name="enable_grid_lines">vertical</property>
+            <property name="enable_tree_lines">True</property>
+            <signal name="button-release-event" handler="on_treeview_click" swapped="no"/>
+            <child internal-child="selection">
+              <object class="GtkTreeSelection" id="treeviewSelection"/>
+            </child>
+            <child>
+              <object class="GtkTreeViewColumn" id="tagColumn">
+                <property name="resizable">True</property>
+                <property name="sizing">autosize</property>
+                <property name="title" translatable="yes">Tag</property>
+                <property name="clickable">True</property>
+                <child>
+                  <object class="GtkCellRendererText" id="tagCell"/>
+                  <attributes>
+                    <attribute name="text">0</attribute>
+                  </attributes>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkTreeViewColumn" id="idColumn">
+                <property name="resizable">True</property>
+                <property name="sizing">autosize</property>
+                <property name="title" translatable="yes">ID</property>
+                <property name="clickable">True</property>
+                <child>
+                  <object class="GtkCellRendererText" id="idCell"/>
+                  <attributes>
+                    <attribute name="text">5</attribute>
+                  </attributes>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkTreeViewColumn" id="comboColumn">
+                <property name="resizable">True</property>
+                <property name="sizing">autosize</property>
+                <property name="title" translatable="yes">Value</property>
+                <property name="clickable">True</property>
+                <child>
+                  <object class="GtkCellRendererCombo" id="comboCell">
+                    <property name="editable">True</property>
+                    <property name="model">comboModel</property>
+                    <property name="text_column">0</property>
+                    <signal name="changed" handler="on_cell_changed" object="store" swapped="no"/>
+                    <signal name="editing-started" handler="populate_combo" swapped="no"/>
+                    <signal name="edited" handler="combo_edited" swapped="no"/>
+                  </object>
+                  <attributes>
+                    <attribute name="text">2</attribute>
+                  </attributes>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+      <packing>
+        <property name="expand">True</property>
+        <property name="fill">True</property>
+        <property name="position">1</property>
+      </packing>
+    </child>
+  </object>
+  <object class="GtkTreeStore" id="store">
+    <columns>
+      <!-- column-name tag -->
+      <column type="gchararray"/>
+      <!-- column-name options -->
+      <column type="GtkListStore"/>
+      <!-- column-name choice -->
+      <column type="gchararray"/>
+      <!-- column-name attr -->
+      <column type="gchararray"/>
+      <!-- column-name default -->
+      <column type="gchararray"/>
+      <!-- column-name id -->
+      <column type="gchararray"/>
+      <!-- column-name active -->
+      <column type="gboolean"/>
+    </columns>
+    <signal name="row-inserted" handler="row_inserted" object="treeview" swapped="no"/>
+  </object>
+  <object class="GtkMenu" id="treeviewPopup">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkMenuItem" id="addSectionPopup">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
+        <property name="label" translatable="yes">Add</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_add_click" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparatorMenuItem" id="menuitem5">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="copyItem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
+        <property name="label" translatable="yes">Copy</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_copy_click" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="pasteItem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
+        <property name="label" translatable="yes">Paste</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_paste_click" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="deleteItem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
+        <property name="label" translatable="yes">Delete</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_delete_click" swapped="no"/>
+      </object>
+    </child>
+  </object>
+</interface>
