@@ -19,6 +19,7 @@
  """
 import copy
 import sys
+import traceback
 from cilibReflection import *
 from xml.etree import ElementTree
 from gi.repository import Gtk
@@ -93,10 +94,9 @@ class CilibTools():
                 self.on_new_click(None)
                 self.get("statusbar").get_message_area().get_children()[0].set_text("Error opening file")
                 dialog = Gtk.MessageDialog(self.get("window"), Gtk.DialogFlags.MODAL,
-                                       Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, "Could not parse file...\n" + str(sys.exc_info()))
+                                       Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, "Could not parse file...\n\n" + str(traceback.format_exc()))
                 dialog.run()
                 dialog.destroy()
-                print sys.exc_info()
 
     def sim_open(self, xmlElement):
         if "samples" in xmlElement.attrib.keys():
