@@ -23,7 +23,7 @@ class CilibReflection:
     methods = {}
 
     def __init__(self):
-        classFile = open("cilib/classes")
+        classFile = open("../etc/cilib/classes")
         classesLines = classFile.readlines()
 
         for cl in classesLines:
@@ -34,7 +34,7 @@ class CilibReflection:
             else:
                 self.classes[classesSplit[0]] = []
 
-        methodFile = open("cilib/methods")
+        methodFile = open("../etc/cilib/methods")
         methodsLines = methodFile.readlines()
 
         prev = ""

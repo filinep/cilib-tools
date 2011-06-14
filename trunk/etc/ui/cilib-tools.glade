@@ -8,7 +8,6 @@
     <property name="modal">True</property>
     <property name="destroy_with_parent">True</property>
     <property name="type_hint">dialog</property>
-    <property name="transient_for">window</property>
     <property name="program_name">CILib-Tools</property>
     <property name="copyright" translatable="yes">Copyright © 2011 Filipe Nepomuceno</property>
     <property name="comments" translatable="yes">It sort of works... I think</property>
@@ -53,7 +52,6 @@
     <property name="modal">True</property>
     <property name="destroy_with_parent">True</property>
     <property name="type_hint">dialog</property>
-    <property name="transient_for">window</property>
     <property name="filter">xmlFilter</property>
     <child internal-child="vbox">
       <object class="GtkBox" id="filechooserdialog-vbox1">
@@ -127,7 +125,6 @@
     <property name="modal">True</property>
     <property name="destroy_with_parent">True</property>
     <property name="type_hint">dialog</property>
-    <property name="transient_for">window</property>
     <property name="action">save</property>
     <property name="do_overwrite_confirmation">True</property>
     <property name="filter">xmlFilter</property>
