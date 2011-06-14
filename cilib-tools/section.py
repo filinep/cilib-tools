@@ -24,7 +24,7 @@ class Section(Gtk.Box):
     def __init__(self, name, base):
         super(Section, self).__init__()
         self.gui = Gtk.Builder()
-        self.gui.add_from_file("ui/section.glade")
+        self.gui.add_from_file("../etc/ui/section.glade")
 
         self.pack_start(self.get("section"), True, True, 0)
         self.gui.connect_signals(self)

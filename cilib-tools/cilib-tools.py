@@ -25,6 +25,7 @@ from xml.etree import ElementTree
 from gi.repository import Gtk
 from section import Section
 from simulator import Simulator
+import common as Common
 
 class CilibTools():
     sections = {"algorithm":None, "problem":None, "measurements":None, "simulation":None}
@@ -33,8 +34,9 @@ class CilibTools():
 
     def __init__(self):
         self.gui = Gtk.Builder()
-        self.gui.add_from_file("ui/cilib-tools.glade")
+        self.gui.add_from_file("../etc/ui/cilib-tools.glade")
         self.gui.connect_signals(self)
+        Common.statusbar = self.get("statusbar")
 
         self.keys = self.sections.keys()
         self.keys.sort()
@@ -70,7 +72,7 @@ class CilibTools():
         
         if response == 0:
             try:
-                self.get("statusbar").get_message_area().get_children()[0].set_text("Opening...")
+                Common.set_status("Opening...")
 
                 self.filename = f
                 self.get("window").set_title(self.get("window").get_title() + " - " + self.filename)
@@ -89,10 +91,10 @@ class CilibTools():
                             else:
                                 self.sim_open(cc)
 
-                self.get("statusbar").get_message_area().get_children()[0].set_text("Opened")
+                Common.set_status("Opened")
             except:
                 self.on_new_click(None)
-                self.get("statusbar").get_message_area().get_children()[0].set_text("Error opening file")
+                Common.set_status("Error opening file")
                 dialog = Gtk.MessageDialog(self.get("window"), Gtk.DialogFlags.MODAL,
                                        Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, "Could not parse file...\n\n" + str(traceback.format_exc()))
                 dialog.run()
@@ -114,7 +116,7 @@ class CilibTools():
             elif el.tag == "samples":
                 sam = el.attrib["value"]
 
-        self.sections["simulation"].store.append([alg, prob, m, sam, f, True, 
+        self.sections["simulation"].store.append([alg, prob, m, sam, f, True, "#ffffff",
                                                 self.sections["simulation"].comboModel,
                                                 self.sections["simulation"].comboModel,
                                                 self.sections["simulation"].comboModel])
