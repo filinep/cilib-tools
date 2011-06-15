@@ -37,6 +37,7 @@ class CilibTools():
         self.gui.add_from_file("../etc/ui/cilib-tools.glade")
         self.gui.connect_signals(self)
         Common.statusbar = self.get("statusbar")
+        Common.window = self.get("window")
 
         self.keys = self.sections.keys()
         self.keys.sort()
@@ -75,7 +76,7 @@ class CilibTools():
                 Common.set_status("Opening...")
 
                 self.filename = f
-                self.get("window").set_title(self.get("window").get_title() + " - " + self.filename)
+                Common.set_title(self.filename)
 
                 xmlFile = open(self.filename, "rw").read()
                 self.xml = ElementTree.fromstring(xmlFile)
@@ -257,16 +258,11 @@ class CilibTools():
 
         if response == 0:
             self.filename = f
-            self.get("window").set_title(self.get("window").get_title() + " - " + self.filename)
+            Common.set_title(self.filename)
 
             outFile = open(self.filename, "w")
 
-            outFile.write("""<?xml version="1.0"?>\n""")
-            outFile.write("""<!DOCTYPE simulator [\n""")
-            outFile.write("""<!ATTLIST algorithm id ID #IMPLIED>\n""")
-            outFile.write("""<!ATTLIST problem id ID #IMPLIED>\n""")
-            outFile.write("""<!ATTLIST measurements id ID #IMPLIED>\n""")
-            outFile.write("""]>\n\n""")
+            Common.write_xml_header(outFile)
             outFile.write("""<simulator>\n""")
 
             for el in self.keys:
