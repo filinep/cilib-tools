@@ -87,6 +87,7 @@ class Simulator(Gtk.Box):
             self.send_text("\rRunning simulation " + str(pids.index(f) + 1) + " of " + str(len(pids)) + ": " + f[1] + " " + f[2] + " " + f[3])
             self.working = self.start_sim(f[0])
             working = True
+
             while working:
                 try:
                     os.kill(self.working[1], 0)
@@ -94,6 +95,7 @@ class Simulator(Gtk.Box):
                     working = False
                 else:
                     Gtk.main_iteration()
+
         self.working = None
         self.check_folder()
 
@@ -107,28 +109,7 @@ class Simulator(Gtk.Box):
         row = self.store.get(it, 0, 1, 2)
         outFile = tempfile.NamedTemporaryFile(mode="r+", delete=False)
 
-        Common.write_xml_header(outFile)
-        outFile.write("""<simulator>\n""")
-
-        outFile.write("""<algorithms>\n""")
-        s = self.tools.sections["algorithm"].store
-        self.tools.recurse_save(outFile, s, self.find_idref(s, row[0]))
-        outFile.write("""</algorithms>\n""")
-
-        outFile.write("""<problems>\n""")
-        s = self.tools.sections["problem"].store
-        self.tools.recurse_save(outFile, s, self.find_idref(s, row[1]))
-        outFile.write("""</problems>\n""")
-
-        s = self.tools.sections["measurements"].store
-        self.tools.recurse_save(outFile, s, self.find_idref(s, row[2]))
-
-        outFile.write("""<simulations>\n""")
-        self.tools.sim_save(outFile, it)
-        outFile.write("""</simulations>\n""")
-
-        outFile.write("""</simulator>\n""")
-        outFile.close()
+        Common.save(outFile, self.tools.sections, row[0], row[1], row[2], it)
 
         return outFile
 
@@ -137,18 +118,6 @@ class Simulator(Gtk.Box):
             f = os.path.join(self.get("outputFolder").get_filename(), i[4])
             if os.path.exists(f):
                 i[6] = "#00dd00"
-
-    def find_idref(self, store, idref):
-        it = store.get_iter_first()
-
-        while it is not None:
-            row = store.get_value(it, 5)
-            if row == idref:
-                return it
-
-            it = store.iter_next(it)
-
-        return None
 
     def restart_vte(self, widget):
         self.vte.fork_command_full(Vte.PtyFlags.DEFAULT, "~", ["/bin/bash"], [],
