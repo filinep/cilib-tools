@@ -107,12 +107,7 @@ class Simulator(Gtk.Box):
         row = self.store.get(it, 0, 1, 2)
         outFile = tempfile.NamedTemporaryFile(mode="r+", delete=False)
 
-        outFile.write("""<?xml version="1.0"?>\n""")
-        outFile.write("""<!DOCTYPE simulator [\n""")
-        outFile.write("""<!ATTLIST algorithm id ID #IMPLIED>\n""")
-        outFile.write("""<!ATTLIST problem id ID #IMPLIED>\n""")
-        outFile.write("""<!ATTLIST measurements id ID #IMPLIED>\n""")
-        outFile.write("""]>\n\n""")
+        Common.write_xml_header(outFile)
         outFile.write("""<simulator>\n""")
 
         outFile.write("""<algorithms>\n""")
