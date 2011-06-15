@@ -126,6 +126,21 @@
           </packing>
         </child>
         <child>
+          <object class="GtkToolButton" id="stopSelected">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="use_action_appearance">False</property>
+            <property name="label" translatable="yes">Stop</property>
+            <property name="use_underline">True</property>
+            <property name="stock_id">gtk-media-stop</property>
+            <signal name="clicked" handler="on_stop_click" swapped="no"/>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="homogeneous">True</property>
+          </packing>
+        </child>
+        <child>
           <object class="GtkToolItem" id="toolbutton2">
             <property name="visible">True</property>
             <property name="can_focus">False</property>

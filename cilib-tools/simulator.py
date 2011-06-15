@@ -3,6 +3,7 @@ import os
 import tempfile
 import time
 import thread
+import signal
 import common as Common
 from gi.repository import Gtk, Vte, GLib
 from xml.etree import ElementTree
@@ -71,31 +72,38 @@ class Simulator(Gtk.Box):
         it = self.store.get_iter(path)
         self.store.set_value(it, 5, not self.store.get_value(it, 5))
 
+    def on_stop_click(self, button):
+        os.kill(self.working[1], signal.SIGKILL)
+        self.working = "Done"
+
     def on_run_click(self, button):
-        if self.working is None and not self.pause:
+        if self.working is None:
             self.vte.reset(True, True)
             pids = []
             self.store.foreach(self.prepare_run, pids)
             self.collective_run(pids)
-            #show pause
-        elif self.pause:
-            #show play
-            pass
+        else:
+            Common.set_status("Simulations are already running...")
 
     def collective_run(self, pids):
         for f in pids:
-            self.send_text("\rRunning simulation " + str(pids.index(f) + 1) + " of " + str(len(pids)) + ": " + f[1] + " " + f[2] + " " + f[3])
-            self.working = self.start_sim(f[0])
-            working = True
+            if not self.working == "Done":
+                self.send_text("\rRunning simulation " + str(pids.index(f) + 1) + " of " + str(len(pids)) + ": " + f[1] + " " + f[2] + " " + f[3])
+                self.working = self.start_sim(f[0])
+                working = True
 
-            while working:
-                try:
-                    os.kill(self.working[1], 0)
-                except OSError:
-                    working = False
-                else:
-                    Gtk.main_iteration()
+                while working:
+                    try:
+                        os.kill(self.working[1], 0)
+                    except Exception:
+                        working = False
+                    else:
+                        Gtk.main_iteration()
+            else:
+                break
 
+        if self.working == "Done":
+            self.send_text("\r\nSimulations aborted")
         self.working = None
         self.check_folder()
 
