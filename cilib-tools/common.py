@@ -1,5 +1,9 @@
+import copy
 from gi.repository import Gtk
+from xml.etree import ElementTree
+from cilibReflection import *
 
+sections = {"algorithm":None, "problem":None, "measurements":None, "simulation":None}
 statusbar = None
 window = None
 tabs = ""
@@ -12,15 +16,15 @@ def set_title(string):
     if window is not None:
         window.set_title("CILib-Tools - " + string)
 
-def save(outFile, sections, alg=None, prob=None, m=None, sim=None):
+def save_xml(outFile, alg=None, prob=None, m=None, sim=None):
+    global sections
     if not None in [alg, prob, m, sim]:
         individuals = {"algorithm": find_idref(sections["algorithm"].store, alg),
                        "problem": find_idref(sections["problem"].store, prob),
                        "measurements": find_idref(sections["measurements"].store, m),
                        "simulation": sim}
 
-    keys = sections.keys()
-    keys.sort()
+    keys = sorted(sections.keys())
 
     outFile.write("""<?xml version="1.0"?>\n""")
     outFile.write("""<!DOCTYPE simulator [\n""")
@@ -125,4 +129,144 @@ def find_idref(store, idref):
         it = store.iter_next(it)
 
     return None
+
+def open_xml(f):
+    xmlFile = open(f, "rw").read()
+    xml = ElementTree.fromstring(xmlFile)
+
+    #populate the trees
+    for c in xml:
+        if c.tag == "measurements":
+            recurse_open(c, None, sections[c.tag].store, c.tag)
+        else:
+            for cc in c:
+                recurse_open(cc, None, sections[cc.tag].store, cc.tag)
+
+def recurse_open(xmlElement, modelElement, model, el):
+    global sections
+    keys = sorted(sections.keys())
+
+    if el == "simulation":
+        if "samples" in xmlElement.attrib.keys():
+            sam = xmlElement.attrib["samples"]
+
+        for e in xmlElement:
+            if e.tag == "algorithm":
+                alg = e.attrib["idref"]
+            elif e.tag == "problem":
+                prob = e.attrib["idref"]
+            elif e.tag == "measurements":
+                m = e.attrib["idref"]
+            elif e.tag == "output":
+                f = e.attrib["file"]
+            elif e.tag == "samples":
+                sam = e.attrib["value"]
+
+        model.append([alg, prob, m, sam, f, True, "#ffffff", True,
+                     sections[el].comboModel, sections[el].comboModel,
+                     sections[el].comboModel])
+    else:
+        toInsert = [xmlElement.tag, Gtk.ListStore(str)]
+
+        #get info to add to model
+        #output is special: has more than 1 attribute
+        if xmlElement.tag == "output":
+            toInsert.append(xmlElement.attrib["file"])
+            toInsert.append("file")
+            toInsert.append("primitive")
+            toInsert.append("")
+            toInsert.append(True)
+        elif len(xmlElement.attrib.keys()) > 0:
+            ID = ""
+
+            #iterate over remaining attributes
+            for k in xmlElement.attrib.keys():
+                #save id for later
+                if k == "id":
+                    ID = xmlElement.attrib[k]
+                    sections[xmlElement.tag].items.append(ID)
+
+                #value and idref are primitives
+                elif k == "idref" or k == "value":
+                    toInsert.append(xmlElement.attrib[k])
+                    toInsert.append(k)
+                    toInsert.append("primitive")
+
+                #for class need to get the default base class...
+                elif k == "class":
+                    toInsert.append(xmlElement.attrib[k])
+                    toInsert.append(k)
+
+                    #... over here
+                    if xmlElement.tag in keys:
+                        default = sections[xmlElement.tag].base
+                    else:
+                        parent = model.get_value(modelElement, 2)
+                        methods = cilib.getMethods("net.sourceforge.cilib." + parent)
+
+                        index = methods["methods"].index(xmlElement.tag)
+                        default = methods["parameters"][index][0]
+
+                    toInsert.append(default.replace("net.sourceforge.cilib.", ""))
+
+                #assume the rest of the attributes can become method calls, so add them as children
+                else:
+                    element = ElementTree.Element(k)
+                    element.set("value", xmlElement.attrib[k])
+                    xmlElement.append(element)
+                    del(xmlElement.attrib[k])
+
+            if len(xmlElement.attrib) == 0:
+                toInsert.append("")
+                toInsert.append("")
+                toInsert.append("")
+
+            toInsert.append(ID)
+            toInsert.append(True)
+
+        #this is for elements without any info e.g. <simulation>... well that's it i guess
+        else:
+            toInsert.append("")
+            toInsert.append("")
+            toInsert.append("")
+            toInsert.append("")
+            toInsert.append(True)
+
+        #add to model
+        modelChild = model.append(modelElement, toInsert)
+
+        #get available options
+        if "class" in xmlElement.attrib.keys():
+            options = copy.deepcopy(cilib.getMethods("net.sourceforge.cilib." + xmlElement.attrib["class"]))
+        else:
+            options = None
+
+        #recurse through children
+        for e in xmlElement:
+            #keep track of used options
+            if options is not None:
+                #remove used options, except add* methods cos can have more than 1
+                if not e.tag.startswith("add") and e.tag in options["methods"]:
+                    del(options["parameters"][options["methods"].index(e.tag)])
+                    del(options["methods"][options["methods"].index(e.tag)])
+
+            recurse_open(e, modelChild, model, el)
+
+        #the rest of the options not in the xml file
+        if options is not None:
+            for m in range(len(options["methods"])):
+                toInsert = [options["methods"][m], Gtk.ListStore(str)]
+
+                if not options["parameters"][m][0] == "primitive":
+                    toInsert.append("Default")
+                    toInsert.append("class")
+                    toInsert.append(options["parameters"][m][0].replace("net.sourceforge.cilib.", ""))
+                else:
+                    toInsert.append("Primitive")
+                    toInsert.append("value")
+                    toInsert.append("primitive")
+
+                toInsert.append("")
+                toInsert.append(True)
+                model.append(modelChild, toInsert)
 

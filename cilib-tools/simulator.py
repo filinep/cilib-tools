@@ -9,7 +9,7 @@ from gi.repository import Gtk, Vte, GLib
 from xml.etree import ElementTree
 
 class Simulator(Gtk.Box):
-    def __init__(self, tools):
+    def __init__(self):
         super(Simulator, self).__init__()
         self.gui = Gtk.Builder()
         self.gui.add_from_file("../etc/ui/simulator.glade")
@@ -28,10 +28,6 @@ class Simulator(Gtk.Box):
         self.get("visibilityFilter").set_visible_column(7)
 
         self.comboModel = self.get("comboModel")
-        self.tools = tools
-        self.items = {"algorithms":self.tools.sections["algorithm"].items,
-                      "problems":self.tools.sections["problem"].items,
-                      "measurements":self.tools.sections["measurements"].items}
 
     def get(self, name):
         return self.gui.get_object(name)
@@ -51,7 +47,7 @@ class Simulator(Gtk.Box):
     def populate_combo(self, column, editable, path):
         self.comboModel.clear()
 
-        for i in self.items[column.get_title().lower() + "s"]:
+        for i in Common.sections[column.get_title().lower()].items:
             self.comboModel.append([i])
 
     def on_add_click(self, button):
@@ -75,8 +71,11 @@ class Simulator(Gtk.Box):
         self.store.set_value(it, 5, not self.store.get_value(it, 5))
 
     def on_stop_click(self, button):
-        os.kill(self.working[1], signal.SIGKILL)
-        self.working = "Done"
+        try:
+            os.kill(self.working[1], signal.SIGKILL)
+            self.working = "Done"
+        except Exception:
+            Common.set_status("No simulations running")
 
     def on_run_click(self, button):
         if self.working is None:
@@ -101,13 +100,14 @@ class Simulator(Gtk.Box):
                         working = False
                     else:
                         Gtk.main_iteration()
+
+                self.check_folder()
             else:
                 break
 
         if self.working == "Done":
             self.send_text("\r\nSimulations aborted")
         self.working = None
-        self.check_folder()
 
     def prepare_run(self, model, path, it, data):
         row = self.store.get(it, 0, 1, 2, 3, 4, 5)
@@ -119,7 +119,7 @@ class Simulator(Gtk.Box):
         row = self.store.get(it, 0, 1, 2)
         outFile = tempfile.NamedTemporaryFile(mode="r+", delete=False)
 
-        Common.save(outFile, self.tools.sections, row[0], row[1], row[2], it)
+        Common.save(outFile, row[0], row[1], row[2], it)
 
         return outFile
 
@@ -148,10 +148,6 @@ class Simulator(Gtk.Box):
             found = True
             row = ' '.join([r[i] for i in range(5)])
             for w in words:
-                """if e.find(w) > -1:
-                    print e
-                    print w + "\n\n"
-                    found = True"""
                 found = found and (row.find(w) > -1)
             r[7] = (found or editable.get_text() == "")
 
