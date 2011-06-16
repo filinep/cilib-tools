@@ -69,9 +69,11 @@ class CilibTools():
 
                 Common.open_xml(self.filename)
 
-                Common.set_status("Opened")
+                Common.set_status("Opened " + self.filename)
             except:
-                Common.set_status("Error opening file")
+                self.on_new_click(None)
+                Common.set_status("Error opening file " + self.filename)
+                self.filename = ""
                 dialog = Gtk.MessageDialog(self.get("window"), Gtk.DialogFlags.MODAL,
                                        Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, "Could not parse file...\n\n" + str(traceback.format_exc()))
                 dialog.run()
@@ -91,8 +93,23 @@ class CilibTools():
 
     def on_quit_click(self, widget):
         #TODO check for changes
-        Gtk.main_quit()
-        sys.exit(0)
+        quit = False
+        if Common.sections["simulation"].working is not None:
+            dialog = Gtk.MessageDialog(self.get("window"), Gtk.DialogFlags.MODAL,
+                                       Gtk.MessageType.WARNING, Gtk.ButtonsType.YES_NO,
+                                       "Simulations are busy running. Are you sure you want to quit?")
+            r = dialog.run()
+            dialog.destroy()
+
+            if r == -8:
+                Common.sections["simulation"].on_stop_click(None)
+                quit = True
+        else:
+            quit = True
+
+        if quit:
+            Gtk.main_quit()
+            sys.exit(0)
 
     def on_saveas_click(self, widget):
         self.on_save_click(widget, True)

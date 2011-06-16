@@ -130,6 +130,21 @@ def find_idref(store, idref):
 
     return None
 
+def find_in_store(store, it, column, term):
+    while it is not None:
+        if store.get_value(it, column) == term:
+            return it
+
+        ret = None
+        if store.iter_n_children(it) > 0:
+            ret = find_in_store(store, store.iter_nth_child(it, 0), column, term)
+
+        if ret is None:
+            it = store.iter_next(it)
+        else:
+            return ret
+    return None
+
 def open_xml(f):
     xmlFile = open(f, "rw").read()
     xml = ElementTree.fromstring(xmlFile)
