@@ -54,11 +54,6 @@ class CilibTools():
 
     def on_open_click(self, widget):
         #TODO check for changes?
-
-        for el in self.keys:
-            Common.sections[el].store.clear()
-            Common.sections[el].items = []
-
         dialog = self.get("fileOpen")
 
         response = dialog.run()
@@ -66,9 +61,9 @@ class CilibTools():
         dialog.hide()
         
         if response == 0:
+            Common.set_status("Opening...")
+            self.on_new_click(None)
             try:
-                Common.set_status("Opening...")
-
                 self.filename = f
                 Common.set_title(self.filename)
 
@@ -76,7 +71,6 @@ class CilibTools():
 
                 Common.set_status("Opened")
             except:
-                self.on_new_click(None)
                 Common.set_status("Error opening file")
                 dialog = Gtk.MessageDialog(self.get("window"), Gtk.DialogFlags.MODAL,
                                        Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, "Could not parse file...\n\n" + str(traceback.format_exc()))
@@ -85,6 +79,7 @@ class CilibTools():
 
     def on_new_click(self, widget):
         self.filename = ""
+        Common.set_title("")
         for el in self.keys:
             Common.sections[el].store.clear()
             Common.sections[el].items = []
@@ -95,12 +90,13 @@ class CilibTools():
         dialog.hide()
 
     def on_quit_click(self, widget):
+        #TODO check for changes
         Gtk.main_quit()
         sys.exit(0)
 
     def on_saveas_click(self, widget):
         self.on_save_click(widget, True)
-    
+
     def on_save_click(self, widget, saveas=False):
         f = self.filename
 
@@ -114,11 +110,11 @@ class CilibTools():
 
         if response == 0:
             self.filename = f
+            Common.set_status("Saving...")
             Common.set_title(self.filename)
-
             outFile = open(self.filename, "w")
-
             Common.save_xml(outFile)
+            Common.set_status("Saved to " + self.filename)
 
 if __name__ == "__main__":
     app = CilibTools()
