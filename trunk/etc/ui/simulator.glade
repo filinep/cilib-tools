@@ -324,7 +324,7 @@
                 <child>
                   <object class="GtkTreeViewColumn" id="measurementsColumn">
                     <property name="sizing">autosize</property>
-                    <property name="title" translatable="yes">Measurement</property>
+                    <property name="title" translatable="yes">Measurements</property>
                     <child>
                       <object class="GtkCellRendererCombo" id="cellrenderertext3">
                         <property name="editable">True</property>
