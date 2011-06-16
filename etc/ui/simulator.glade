@@ -393,8 +393,6 @@
       <column type="gchararray"/>
       <!-- column-name Visible -->
       <column type="gboolean"/>
-      <!-- column-name Dimension -->
-      <column type="gchararray"/>
       <!-- column-name MeasureOptions -->
       <column type="GtkListStore"/>
       <!-- column-name ProbOptions -->

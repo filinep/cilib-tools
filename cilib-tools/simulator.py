@@ -119,7 +119,7 @@ class Simulator(Gtk.Box):
         row = self.store.get(it, 0, 1, 2)
         outFile = tempfile.NamedTemporaryFile(mode="r+", delete=False)
 
-        Common.save(outFile, row[0], row[1], row[2], it)
+        Common.save_xml(outFile, row[0], row[1], row[2], it)
 
         return outFile
 
