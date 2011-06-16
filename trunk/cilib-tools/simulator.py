@@ -155,3 +155,45 @@ class Simulator(Gtk.Box):
         if icon == Gtk.EntryIconPosition.SECONDARY:
             entry.set_text("")
 
+    def on_dimension_remove_click(self, treeSelection):
+        data = treeSelection.get_selected()
+        if data[1] is not None:
+            data[0].remove(data[1])
+
+    def on_dimension_add_click(self, a1):
+        self.get("dimGenModel").append(["30"])
+
+    def on_generate_simulations_click(self, button):
+        #TODO read probs, TODO constraints
+        for el in ["algorithm", "problem", "measurements"]:
+            model = self.get(el + "GenModel")
+            model.clear()
+            for i in Common.sections[el].items:
+                model.append([True, i])
+
+        dialog = self.get("simGeneratorDialog")
+        response = dialog.run()
+        dialog.hide()
+
+        algs = [i for i in self.get("algorithmGenModel") if i[0]]
+        probs = [i for i in self.get("problemGenModel") if i[0]]
+        ms = [i for i in self.get("measurementsGenModel") if i[0]]
+        dims = [i for i in self.get("dimGenModel")]
+
+        if response == 0:
+            #TODO setup probs
+            for m in ms:
+                for d in dims:
+                    for a in algs:
+                        for p in probs:
+                            self.store.append([a[1], m[1], d[0]+"_"+p[1], self.get("samplesEntry").get_text(),
+                                "data/" + d[0] + "_" + p[1] + "_" + a[1] + ".txt", True, "#ffffff", True,
+                                self.comboModel, self.comboModel, self.comboModel])
+
+    def dim_edited(self, cell, path, newText):
+        model = self.get("dimGenModel")
+        model.set_value(model.get_iter(path), 0, newText)
+
+    def on_gen_toggle(self, model, path):
+        it = model.get_iter(path)
+        model.set_value(it, 0, not model.get_value(it, 0))
