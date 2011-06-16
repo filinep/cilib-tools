@@ -41,6 +41,8 @@
                 <property name="label">gtk-open</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="can_default">True</property>
+                <property name="has_default">True</property>
                 <property name="receives_default">True</property>
                 <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
@@ -95,6 +97,8 @@
       <object class="GtkToolbar" id="toolbar">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="valign">start</property>
+        <property name="hexpand">True</property>
         <child>
           <object class="GtkToolButton" id="addSimulation">
             <property name="visible">True</property>
@@ -107,7 +111,6 @@
           </object>
           <packing>
             <property name="expand">False</property>
-            <property name="homogeneous">True</property>
           </packing>
         </child>
         <child>
@@ -122,7 +125,6 @@
           </object>
           <packing>
             <property name="expand">False</property>
-            <property name="homogeneous">True</property>
           </packing>
         </child>
         <child>
@@ -137,7 +139,6 @@
           </object>
           <packing>
             <property name="expand">False</property>
-            <property name="homogeneous">True</property>
           </packing>
         </child>
         <child>
@@ -166,7 +167,6 @@
           </object>
           <packing>
             <property name="expand">False</property>
-            <property name="homogeneous">True</property>
           </packing>
         </child>
         <child>
@@ -186,55 +186,29 @@
           </object>
           <packing>
             <property name="expand">False</property>
-            <property name="homogeneous">True</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkSeparatorToolItem" id="toolbutton5">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="use_action_appearance">False</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="homogeneous">True</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkToolItem" id="toolbutton3">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="use_action_appearance">False</property>
-            <child>
-              <object class="GtkLabel" id="label3">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Search: </property>
-              </object>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="homogeneous">True</property>
           </packing>
         </child>
         <child>
           <object class="GtkToolItem" id="toolbutton4">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="halign">end</property>
             <property name="use_action_appearance">False</property>
             <child>
               <object class="GtkEntry" id="treeviewSearch">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="invisible_char">●</property>
+                <property name="caps_lock_warning">False</property>
+                <property name="primary_icon_stock">gtk-find</property>
+                <property name="secondary_icon_stock">gtk-clear</property>
                 <signal name="changed" handler="tree_search" swapped="no"/>
+                <signal name="icon-press" handler="clear_search_click" swapped="no"/>
               </object>
             </child>
           </object>
           <packing>
-            <property name="expand">False</property>
-            <property name="homogeneous">True</property>
+            <property name="expand">True</property>
           </packing>
         </child>
       </object>
@@ -419,6 +393,8 @@
       <column type="gchararray"/>
       <!-- column-name Visible -->
       <column type="gboolean"/>
+      <!-- column-name Dimension -->
+      <column type="gchararray"/>
       <!-- column-name MeasureOptions -->
       <column type="GtkListStore"/>
       <!-- column-name ProbOptions -->

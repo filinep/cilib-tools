@@ -151,3 +151,7 @@ class Simulator(Gtk.Box):
                 found = found and (row.find(w) > -1)
             r[7] = (found or editable.get_text() == "")
 
+    def clear_search_click(self, entry, icon, data):
+        if icon == Gtk.EntryIconPosition.SECONDARY:
+            entry.set_text("")
+
