@@ -117,7 +117,7 @@ class CilibTools():
             elif el.tag == "samples":
                 sam = el.attrib["value"]
 
-        self.sections["simulation"].store.append([alg, prob, m, sam, f, True, "#ffffff",
+        self.sections["simulation"].store.append([alg, prob, m, sam, f, True, "#ffffff", True,
                                                 self.sections["simulation"].comboModel,
                                                 self.sections["simulation"].comboModel,
                                                 self.sections["simulation"].comboModel])
