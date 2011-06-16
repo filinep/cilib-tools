@@ -25,6 +25,8 @@ class Simulator(Gtk.Box):
         self.pause = False
 
         self.store = self.get("store")
+        self.get("visibilityFilter").set_visible_column(7)
+
         self.comboModel = self.get("comboModel")
         self.tools = tools
         self.items = {"algorithms":self.tools.sections["algorithm"].items,
@@ -41,7 +43,6 @@ class Simulator(Gtk.Box):
             new_text = self.comboModel.get_value(new_text, 0)
 
         self.store.set_value(treeIter, self.get("treeview").get_columns().index(column) - 1, new_text)
-        column
 
     def entry_edited(self, column, path, new_text):
         treeIter = self.store.get_iter(path)
@@ -54,7 +55,8 @@ class Simulator(Gtk.Box):
             self.comboModel.append([i])
 
     def on_add_click(self, button):
-        self.store.append(["", "", "", "30", "", True, "#ffffff", self.comboModel, self.comboModel, self.comboModel])
+        self.store.append(["", "", "", "30", "", True, "#ffffff", True,
+                           self.comboModel, self.comboModel, self.comboModel])
 
     def on_outputfolder_set(self, widget):
         print widget.get_filename()
@@ -140,7 +142,16 @@ class Simulator(Gtk.Box):
 
         self.vte.feed(text, len(text))
 
-    def on_window_destroy(self, widget):
-        Gtk.main_quit()
-        sys.exit(0)
+    def tree_search(self, editable):
+        words = editable.get_text().split()
+        for r in self.store:
+            found = True
+            row = ' '.join([r[i] for i in range(5)])
+            for w in words:
+                """if e.find(w) > -1:
+                    print e
+                    print w + "\n\n"
+                    found = True"""
+                found = found and (row.find(w) > -1)
+            r[7] = (found or editable.get_text() == "")
 
