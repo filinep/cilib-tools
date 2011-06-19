@@ -44,7 +44,7 @@ import java.util.List;
  * @author gpampara
  * @TODO: This class should probably use a divide and conquer startegy to combine files as needed
  */
-class TextBasedCombiner implements MeasurementCombiner {
+class TextBasedCombiner {
 
     private final File file;
 
@@ -58,7 +58,6 @@ class TextBasedCombiner implements MeasurementCombiner {
      * <p>
      * This method actually creates a text file, named {@code filename}.
      */
-    @Override
     public void combine(List<String> descriptions, List<File> partials) {
         Preconditions.checkArgument(descriptions.size() >= 1);
         Preconditions.checkArgument(partials.size() >= 1);

@@ -29,22 +29,20 @@ import org.w3c.dom.Node;
  *
  * @author gpampara
  */
-class XMLObjectBuilder implements LinkedObjectBuilder, LinkedXMLObjectBuilder {
+class XMLObjectBuilder {
     private Document config;
     private Element element;
 
-    LinkedObjectBuilder config(final Document config) {
+    XMLObjectBuilder config(final Document config) {
         this.config = config;
         return this;
     }
 
-    @Override
-    public LinkedXMLObjectBuilder element(Node item) {
+    public XMLObjectBuilder element(Node item) {
         this.element = (Element) item;
         return this;
     }
 
-    @Override
     public XMLObjectFactory build() {
         return new XMLObjectFactory(config, element);
     }
