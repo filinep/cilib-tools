@@ -1,4 +1,3 @@
-#!/usr/bin/python
 """
  * cilib-tools
  * Copyright (C) 2011
@@ -25,43 +24,43 @@ from simulator import Simulator
 import common as Common
 
 class CilibTools():
-    filename = ""
+    filename = ''
 
     def __init__(self):
         self.gui = Gtk.Builder()
-        self.gui.add_from_file("../etc/ui/cilib-tools.glade")
+        self.gui.add_from_file('../etc/ui/cilib-tools.glade')
         self.gui.connect_signals(self)
 
-        Common.statusbar = self.get("statusbar")
-        Common.window = self.get("window")
+        Common.statusbar = self.get('statusbar')
+        Common.window = self.get('window')
 
         self.keys = sorted(Common.sections.keys())
 
-        Common.sections["algorithm"] = Section("algorithm", "algorithm.Algorithm")
-        Common.sections["problem"] = Section("problem", "problem.Problem")
-        Common.sections["measurements"] = Section("measurements", "simulator.MeasurementSuite")
-        Common.sections["simulation"] = Simulator()
+        Common.sections['algorithm'] = Section('algorithm', 'algorithm.Algorithm')
+        Common.sections['problem'] = Section('problem', 'problem.Problem')
+        Common.sections['measurements'] = Section('measurements', 'simulator.MeasurementSuite')
+        Common.sections['simulation'] = Simulator()
 
-        self.get("sections").append_page(Common.sections["algorithm"], Gtk.Label("Algorithms"))
-        self.get("sections").append_page(Common.sections["problem"], Gtk.Label("Problems"))
-        self.get("sections").append_page(Common.sections["measurements"], Gtk.Label("Measurments"))
-        self.get("sections").append_page(Common.sections["simulation"], Gtk.Label("Simulator"))
+        self.get('sections').append_page(Common.sections['algorithm'], Gtk.Label('Algorithms'))
+        self.get('sections').append_page(Common.sections['problem'], Gtk.Label('Problems'))
+        self.get('sections').append_page(Common.sections['measurements'], Gtk.Label('Measurments'))
+        self.get('sections').append_page(Common.sections['simulation'], Gtk.Label('Simulator'))
 
-        self.get("sections").show_all()
+        self.get('sections').show_all()
 
     def get(self, name):
         return self.gui.get_object(name)
 
     def on_open_click(self, widget):
         #TODO check for changes?
-        dialog = self.get("fileOpen")
+        dialog = self.get('fileOpen')
 
         response = dialog.run()
         f = dialog.get_filename()
         dialog.hide()
         
         if response == 0:
-            Common.set_status("Opening...")
+            Common.set_status('Opening...')
             self.on_new_click(None)
             try:
                 self.filename = f
@@ -69,40 +68,42 @@ class CilibTools():
 
                 Common.open_xml(self.filename)
 
-                Common.set_status("Opened " + self.filename)
+                Common.set_status('Opened ' + self.filename)
             except:
                 self.on_new_click(None)
-                Common.set_status("Error opening file " + self.filename)
-                self.filename = ""
-                dialog = Gtk.MessageDialog(self.get("window"), Gtk.DialogFlags.MODAL,
-                                       Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, "Could not parse file...\n\n" + str(traceback.format_exc()))
+                Common.set_status('Error opening file ' + self.filename)
+                self.filename = ''
+                dialog = Gtk.MessageDialog(self.get('window'), Gtk.DialogFlags.MODAL,
+                                       Gtk.MessageType.ERROR, Gtk.ButtonsType.OK,
+                                       'Could not parse file...\n\n'
+                                       + str(traceback.format_exc()))
                 dialog.run()
                 dialog.destroy()
 
     def on_new_click(self, widget):
-        self.filename = ""
-        Common.set_title("")
+        self.filename = ''
+        Common.set_title('')
         for el in self.keys:
             Common.sections[el].store.clear()
             Common.sections[el].items = []
 
     def on_about_click(self, widget):
-        dialog = self.get("aboutdialog")
+        dialog = self.get('aboutdialog')
         dialog.run()
         dialog.hide()
 
     def on_quit_click(self, widget):
         #TODO check for changes
         quit = False
-        if Common.sections["simulation"].working is not None:
-            dialog = Gtk.MessageDialog(self.get("window"), Gtk.DialogFlags.MODAL,
+        if Common.sections['simulation'].working is not None:
+            dialog = Gtk.MessageDialog(self.get('window'), Gtk.DialogFlags.MODAL,
                                        Gtk.MessageType.WARNING, Gtk.ButtonsType.YES_NO,
-                                       "Simulations are busy running. Are you sure you want to quit?")
+                                       'Simulations are busy running. Are you sure you want to quit?')
             r = dialog.run()
             dialog.destroy()
 
             if r == -8:
-                Common.sections["simulation"].on_stop_click(None)
+                Common.sections['simulation'].on_stop_click(None)
                 quit = True
         else:
             quit = True
@@ -117,8 +118,8 @@ class CilibTools():
     def on_save_click(self, widget, saveas=False):
         f = self.filename
 
-        if saveas or self.filename == "":
-            dialog = self.get("fileSave")
+        if saveas or self.filename == '':
+            dialog = self.get('fileSave')
             response = dialog.run()
             f = dialog.get_filename()
             dialog.hide()
@@ -127,12 +128,12 @@ class CilibTools():
 
         if response == 0:
             self.filename = f
-            Common.set_status("Saving...")
+            Common.set_status('Saving...')
             Common.set_title(self.filename)
-            outFile = open(self.filename, "w")
+            outFile = open(self.filename, 'w')
             Common.save_xml(outFile)
-            Common.set_status("Saved to " + self.filename)
+            Common.set_status('Saved to ' + self.filename)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app = CilibTools()
     Gtk.main()

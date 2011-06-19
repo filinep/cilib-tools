@@ -24,25 +24,25 @@ class Section(Gtk.Box):
     def __init__(self, name, base):
         super(Section, self).__init__()
         self.gui = Gtk.Builder()
-        self.gui.add_from_file("../etc/ui/section.glade")
+        self.gui.add_from_file('../etc/ui/section.glade')
 
-        self.pack_start(self.get("section"), True, True, 0)
+        self.pack_start(self.get('section'), True, True, 0)
         self.gui.connect_signals(self)
 
-        self.comboModel = self.get("comboModel")
+        self.comboModel = self.get('comboModel')
         self.name = name
         self.base = base
 
-        self.selected = ""
-        self.copied = ""
+        self.selected = ''
+        self.copied = ''
         self.selectedModel = None
         self.copiedModel = None
         self.items = []
 
-        self.store = self.get("store")
+        self.store = self.get('store')
 
     def view_treeview_popup(self, treeview, event, data=None):
-        menu = self.get("treeviewPopup")
+        menu = self.get('treeviewPopup')
         menu.show_all()
 
         if event is not None:
@@ -65,38 +65,46 @@ class Section(Gtk.Box):
         treeIter = self.store.get_iter(path)
         row = self.store.get(treeIter, 0, 1, 2, 3, 4, 5, 6)
 
-        deps = cilib.getDependents("net.sourceforge.cilib." + row[4])
+        deps = cilib.getDependents('net.sourceforge.cilib.' + row[4])
 
-        self.comboModel.append(["Default"])
+        self.comboModel.append(['Default'])
         for d in deps:
-            self.comboModel.append([d.replace("net.sourceforge.cilib.", "")])
+            self.comboModel.append([d.replace('net.sourceforge.cilib.', '')])
 
     def on_cell_changed(self, model, path, new_iter):
-        newValue =  self.comboModel.get_value(new_iter, 0) #0 means column 0 in combo model
+        newValue =  self.comboModel.get_value(new_iter, 0)
         treeIter = self.store.get_iter(path)
         parent = self.store.iter_parent(treeIter)
 
         #if more than one can be added (assuming all add* methods)
-        if self.store.get_value(treeIter, 0).startswith("add"):
-            self.store.insert_after(parent, treeIter, self.store.get(treeIter, 0, 1, 2, 3, 4, 5, 6))
+        if self.store.get_value(treeIter, 0).startswith('add'):
+            row = self.store.get(treeIter, 0, 1, 2, 3, 4, 5, 6)
+            self.store.insert_after(parent, treeIter, row)
             #TODO insert defaults-^
 
         oldValue = self.store.get_value(treeIter, 2)
-        self.store.set_value(treeIter, 2, newValue) #2 means column 2 in tree model
+        self.store.set_value(treeIter, 2, newValue)
 
         #remove existing children
         while self.store.iter_has_child(treeIter):
             self.store.remove(self.store.iter_children(treeIter))
 
-        if not newValue == "Default" and not newValue == "Primitive" and not oldValue == newValue:
-            methods = cilib.getMethods("net.sourceforge.cilib." + newValue)
-            for m in range(len(methods["methods"])):
-                deps = cilib.getDependents(methods["parameters"][m][0])
+        if not (newValue == 'Default' or newValue == 'Primitive' or oldValue == newValue):
+            methods = cilib.getMethods('net.sourceforge.cilib.' + newValue)
+            for m in range(len(methods['methods'])):
+                deps = cilib.getDependents(methods['parameters'][m][0])
 
-                if methods["parameters"][m][0] == "primitive":
-                    self.store.append(treeIter, (methods["methods"][m], self.comboModel, "Primitive", "value", "Primitive", "", True))
+                if methods['parameters'][m][0] == 'primitive':
+                    self.store.append(treeIter, (methods['methods'][m],
+                                                 self.comboModel, 'Primitive',
+                                                 'value', 'Primitive', '', True))
                 else:
-                    self.store.append(treeIter, (methods["methods"][m], self.comboModel, "Default", "class", methods["parameters"][m][0].replace("net.sourceforge.cilib.", ""), "", True))
+                    self.store.append(treeIter, (methods['methods'][m],
+                                                 self.comboModel, 'Default',
+                                                 'class',
+                                                 methods['parameters'][m][0]
+                                                    .replace('net.sourceforge.cilib.', ''),
+                                                 '', True))
 
     def row_inserted(self, treeview, path, it):
         treeview.expand_to_path(path)
@@ -106,7 +114,8 @@ class Section(Gtk.Box):
         self.copiedModel = self.selectedModel
 
     def on_paste_click(self, widget):
-        self.copy_subtree(self.copiedModel, self.selectedModel, self.copied, self.selected)
+        self.copy_subtree(self.copiedModel, self.selectedModel, self.copied,
+                          self.selected)
 
     def on_delete_click(self, widget):
         self.delete_subtree(self.selectedModel, self.selected)
@@ -128,31 +137,32 @@ class Section(Gtk.Box):
             self.view_treeview_popup(treeview, event, data)
 
     def on_collapse_click(self, button):
-        self.get("treeview").collapse_all()
+        self.get('treeview').collapse_all()
 
     def on_expand_click(self, button):
-        self.get("treeview").expand_all()
+        self.get('treeview').expand_all()
 
     def on_add_click(self, button):
-        entry = self.get("idEntry")
-        error = self.get("errorLabel")
-        dialog = self.get("getID")
+        entry = self.get('idEntry')
+        error = self.get('errorLabel')
+        dialog = self.get('getID')
         response = dialog.run()
 
         if response == 0:
-            if entry.get_text() == "":
+            if entry.get_text() == '':
                 error.show()
                 self.on_add_click(button)
             else:
                 self.store.append(None, 
-                    [self.name, self.comboModel, "Default", "class", self.base, entry.get_text(), True])
+                    [self.name, self.comboModel, 'Default', 'class', self.base,
+                     entry.get_text(), True])
                 self.items.append(entry.get_text())
                 self.items.sort()
                 dialog.hide()
         else:
             dialog.hide()
 
-        entry.set_text("")
+        entry.set_text('')
         error.hide()
 
     def copy_subtree(self, src, dest, srcRoot, destRoot):
@@ -163,3 +173,4 @@ class Section(Gtk.Box):
 
     def delete_subtree(self, src, root):
         src.remove(root)
+
