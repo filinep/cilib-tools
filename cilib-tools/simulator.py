@@ -64,11 +64,12 @@ class Simulator(Gtk.Box):
 
     def toggle_all(self, model, path, it, data):
         it = self.store.get_iter(path)
-        self.store.set_value(it, 5, data)
+        if self.store.get_value(it, 7):
+            self.store.set_value(it, 5, data)
 
     def on_run_toggle(self, cell, path):
-        it = self.store.get_iter(path)
-        self.store.set_value(it, 5, not self.store.get_value(it, 5))
+        it = [i for i in self.store if i[7]][int(path)]
+        it[5] = not it[5]
 
     def on_stop_click(self, button):
         try:
