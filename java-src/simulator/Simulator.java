@@ -67,7 +67,7 @@ class Simulator {
     private final XMLObjectFactory algorithmFactory;
     private final XMLObjectFactory problemFactory;
     private final XMLObjectFactory measurementFactory;
-    private final MeasurementCombiner combiner;
+    private final TextBasedCombiner combiner;
     private final int samples;
 
     /**
@@ -78,7 +78,7 @@ class Simulator {
      * @param problemFactory The problem factory.
      * @param measurementFactory The measurement suite.
      */
-    Simulator(ExecutorService executor, XMLObjectFactory algorithmFactory, XMLObjectFactory problemFactory, XMLObjectFactory measurementFactory, MeasurementCombiner combiner, int samples) {
+    Simulator(ExecutorService executor, XMLObjectFactory algorithmFactory, XMLObjectFactory problemFactory, XMLObjectFactory measurementFactory, TextBasedCombiner combiner, int samples) {
         this.executor = executor;
         this.algorithmFactory = algorithmFactory;
         this.problemFactory = problemFactory;

@@ -22,7 +22,6 @@
 package simulator;
 
 import com.google.common.collect.Lists;
-import com.google.inject.Inject;
 import java.io.File;
 import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
@@ -31,6 +30,7 @@ import net.sourceforge.cilib.algorithm.ProgressListener;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import java.util.concurrent.Executors;
 
 /**
  * The basic skeleton of the simulator. The aim of the shell is to allow
@@ -45,16 +45,11 @@ import org.w3c.dom.NodeList;
 class SimulatorShell {
 
     private final XMLObjectBuilder objectBuilder;
-    private final SimulatorCreator creator;
-    private final MeasurementCombinerBuilder combinerBuilder;
+    private final int cpus;
 
-    @Inject
-    SimulatorShell(XMLObjectBuilder objectBuilder,
-            SimulatorCreator creator,
-            MeasurementCombinerBuilder combinerBuilder) {
+    SimulatorShell(XMLObjectBuilder objectBuilder, int cpus) {
         this.objectBuilder = objectBuilder;
-        this.creator = creator;
-        this.combinerBuilder = combinerBuilder;
+        this.cpus = cpus;
     }
 
     /**
@@ -76,9 +71,14 @@ class SimulatorShell {
                 XMLObjectFactory algorithmFactory = objectBuilder.config(config).element(current.getElementsByTagName("algorithm").item(0)).build();
                 XMLObjectFactory problemFactory = objectBuilder.config(config).element(current.getElementsByTagName("problem").item(0)).build();
                 XMLObjectFactory measurementsFactory = objectBuilder.config(config).element((Element) current.getElementsByTagName("measurements").item(0)).build();
-                MeasurementCombiner combiner = createCombiner((Element) current.getElementsByTagName("output").item(0));
+                TextBasedCombiner combiner = createCombiner((Element) current.getElementsByTagName("output").item(0));
 
-                Simulator simulator = creator.algorithm(algorithmFactory).problem(problemFactory).measurement(measurementsFactory).combiner(combiner).samples(samples).get();
+                Simulator simulator = new Simulator(Executors.newFixedThreadPool(this.cpus),
+                                                    algorithmFactory,
+                                                    problemFactory,
+                                                    measurementsFactory,
+                                                    combiner,
+                                                    samples);
                 simulator.init(); // Prepare the simulator by initializing the simulations
                 simulators.add(simulator);
             }
@@ -103,12 +103,10 @@ class SimulatorShell {
         }
     }
 
-    /*
-     * This shoud be a guice provider.... I don't like this
-     */
-    private MeasurementCombiner createCombiner(Element item) {
-        String file = item.getAttribute("file");
-        OutputType format = OutputType.valueOf(item.getAttribute("format").toUpperCase());
-        return this.combinerBuilder.build(format, file);
+    private TextBasedCombiner createCombiner(Element item) {
+        String filename = item.getAttribute("file");
+        File file = new File(filename);
+        file.getParentFile().mkdirs(); // Create the required directory structure.
+        return new TextBasedCombiner(file);
     }
 }

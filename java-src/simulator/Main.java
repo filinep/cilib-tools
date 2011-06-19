@@ -43,11 +43,17 @@ public final class Main {
      */
     public static void main(String[] args) {
         if (args.length < 1) {
-            throw new IllegalArgumentException("Please provide the correct arguments.\nUsage: Simulator <simulation-config.xml> [-noprogress|-textprogress|-guiprogress]");
+            throw new IllegalArgumentException("Please provide the correct arguments.\nUsage: Simulator <simulation-config.xml>");
         }
 
-        Injector injector = Guice.createInjector(new SimulatorModule());
-        SimulatorShell shell = injector.getInstance(SimulatorShell.class);
+        int cpus;
+        if(args.length > 1) {
+            cpus = Integer.parseInt(args[1]);
+        } else {
+            cpus = Runtime.getRuntime().availableProcessors();
+        }
+
+        SimulatorShell shell = new SimulatorShell(new XMLObjectBuilder(), cpus);
         final List<Simulator> simulators = shell.prepare(new File(args[0]));
 
         shell.execute(simulators, new ProgressText(simulators.size()));

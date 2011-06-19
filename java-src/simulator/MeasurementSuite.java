@@ -42,7 +42,7 @@ import net.sourceforge.cilib.type.types.Type;
  *
  * @author  Edwin Peer
  */
-public class MeasurementSuite implements MeasurementCollector {
+public class MeasurementSuite {
 
     private static final long serialVersionUID = 8021290553229945841L;
     private File file;
@@ -112,7 +112,6 @@ public class MeasurementSuite implements MeasurementCollector {
      * as measurements are taken on the current {@linkplain Algorithm}.
      * @param algorithm The {@linkplain Algorithm} to measure.
      */
-    @Override
     public void measure(Algorithm algorithm) {
         Type[] tmp = new Type[measurements.size()];
         int index = 0;
@@ -130,6 +129,7 @@ public class MeasurementSuite implements MeasurementCollector {
 
             tmp[index++] = value;
         }
+
         StringBuilder builder = new StringBuilder();
         builder.append(algorithm.getIterations());
         for (Type t : tmp) {
@@ -144,18 +144,11 @@ public class MeasurementSuite implements MeasurementCollector {
         }
     }
 
-    @Override
-    public void add(Measurement<?> measurement) {
-        measurements.add(measurement);
-    }
-
-    @Override
     public void close() throws IOException {
         this.writer.flush();
         this.writer.close();
     }
 
-    @Override
     public List<String> getDescriptions() {
         List<String> result = Lists.newArrayList();
         for (Measurement<?> measurement : measurements) {
