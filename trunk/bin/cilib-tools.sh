@@ -1,5 +1,4 @@
 #!/bin/sh
 
-CILIBTOOLS_HOME=/home/filipe/Desktop/cilib-tools
-cd $CILIBTOOLS_HOME/cilib-tools
+cd $(cd `dirname $0` && pwd)/../cilib-tools
 /usr/bin/env python ./cilib-tools.py
