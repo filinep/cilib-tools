@@ -114,11 +114,11 @@ class Section(Gtk.Box):
         self.copiedModel = self.selectedModel
 
     def on_paste_click(self, widget):
-        self.copy_subtree(self.copiedModel, self.selectedModel, self.copied,
+        Common.copy_subtree(self.copiedModel, self.selectedModel, self.copied,
                           self.selected)
 
     def on_delete_click(self, widget):
-        self.delete_subtree(self.selectedModel, self.selected)
+        Common.delete_subtree(self.selectedModel, self.selected)
 
     def on_treeview_click(self, treeview, event, data=None):
         if event.type == Gdk.EventType.BUTTON_RELEASE and event.button == 3:
@@ -164,13 +164,4 @@ class Section(Gtk.Box):
 
         entry.set_text('')
         error.hide()
-
-    def copy_subtree(self, src, dest, srcRoot, destRoot):
-        newDest = dest.append(destRoot, src.get(srcRoot, 0, 1, 2, 3, 4, 5, 6))
-
-        for i in range(src.iter_n_children(srcRoot)):
-            self.copy_subtree(src, dest, src.iter_nth_child(srcRoot, i), newDest)
-
-    def delete_subtree(self, src, root):
-        src.remove(root)
 
