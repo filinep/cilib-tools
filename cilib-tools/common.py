@@ -315,3 +315,13 @@ def recurse_open(xmlElement, modelElement, model, el):
                 toInsert.append(True)
                 model.append(modelChild, toInsert)
 
+def copy_subtree(src, dest, srcRoot, destRoot):
+    newDest = dest.append(destRoot, src.get(srcRoot, 0, 1, 2, 3, 4, 5, 6))
+
+    for i in range(src.iter_n_children(srcRoot)):
+        copy_subtree(src, dest, src.iter_nth_child(srcRoot, i), newDest)
+
+    return newDest
+
+def delete_subtree(src, root):
+    src.remove(root)

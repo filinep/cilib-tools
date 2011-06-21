@@ -72,7 +72,8 @@ class Simulator(Gtk.Box):
     def on_outputfolder_set(self, widget):
         newFolder = widget.get_filename()
         for i in self.store:
-            i[4].split('/')
+            filename = i[4].split('/')[-1]
+            i[4] = os.path.join(newFolder, filename)
 
     def on_header_toggle(self, w):
         newState = not self.get('runHeader').get_active()
@@ -145,7 +146,7 @@ class Simulator(Gtk.Box):
     def check_folder(self):
         for i in self.store:
             f = os.path.join(self.get('outputFolder').get_filename(), i[4])
-            if os.path.exists(f):
+            if os.path.exists(f) or os.path.exists(i[4]):
                 i[6] = '#00dd00'
 
     def start_sim(self, sim):
@@ -182,7 +183,7 @@ class Simulator(Gtk.Box):
         self.get('dimGenModel').append(['30'])
 
     def on_generate_simulations_click(self, button):
-        #TODO read probs, TODO constraints
+        #TODO constraints
         for el in ['algorithm', 'problem', 'measurements']:
             model = self.get(el + 'GenModel')
             model.clear()
@@ -194,22 +195,38 @@ class Simulator(Gtk.Box):
         dialog.hide()
 
         algs = [i for i in self.get('algorithmGenModel') if i[0]]
-        probs = [i for i in self.get('problemGenModel') if i[0]]
+        probs = [i for i in self.get('problemGenModel') if i[0] and not i[1][0].isdigit()]
         ms = [i for i in self.get('measurementsGenModel') if i[0]]
         dims = [i for i in self.get('dimGenModel')]
 
         if response == 0:
-            #TODO setup probs
+            self.generate_probs(probs, dims)
             for m in ms:
                 for d in dims:
                     for a in algs:
                         for p in probs:
-                            self.store.append([a[1], m[1], d[0]+'_'+p[1],
+                            self.store.append([a[1], d[0]+'_'+p[1], m[1],
                                               self.get('samplesEntry').get_text(),
                                               'data/' + d[0] + '_' + p[1] + '_'
                                               + a[1] + '.txt', True, '#ffffff', True,
                                               self.comboModel, self.comboModel,
                                               self.comboModel])
+
+    def generate_probs(self, ids, dims):
+        for i in [x[1] for x in ids]:
+            it = Common.find_idref(Common.sections['problem'].store, i)
+            for d in [x[0] for x in dims]:
+                if Common.find_idref(Common.sections['problem'].store, d + '_' + i) is None:
+                    newIt = Common.copy_subtree(Common.sections['problem'].store,
+                                            Common.sections['problem'].store,
+                                            it, None)
+                    Common.sections['problem'].store.set_value(newIt, 5, d + '_' + i)
+                    domainIt = Common.find_in_store(Common.sections['problem'].store,
+                                                    newIt, 0, 'domain')
+                    if domainIt is not None:
+                        Common.sections['problem'].store.set_value(domainIt, 2,
+                            Common.sections['problem'].store.get_value(domainIt, 2)
+                                .split('^')[0] + '^' + d)
 
     def dim_edited(self, cell, path, newText):
         model = self.get('dimGenModel')
